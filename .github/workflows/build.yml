@@ -82,6 +82,7 @@ jobs:
           pushd $PACKAGE_PATH
           sudo -u aurbuilder -- env PKGDEST=$PWD/dist makepkg -si --noconfirm .
           popd
+          ls -l $PACKAGE_PATH/dist
       
       - name: Upload package
         uses: actions/upload-artifact@v4
@@ -94,6 +95,9 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/${{ github.repository }}/my-arch-repos:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.CR_PAT }}
     permissions:
       contents: write
       packages: write
