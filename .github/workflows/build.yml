@@ -40,6 +40,12 @@ jobs:
         run: |
           cd packages
           packages=$(find . -maxdepth 1 -type d | sed 's|^\./||' | grep -v '^\.' | jq -R . | jq -cs .)
+
+          if [ -z "$packages" ] || [ "$packages" == "[]" ]; then
+            echo "No packages found."
+            exit 1
+          fi
+
           echo "packages=$packages" >> $GITHUB_OUTPUT
 
   build-packages:
