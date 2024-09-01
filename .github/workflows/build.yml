@@ -60,6 +60,9 @@ jobs:
         package: ${{ fromJson(needs.list-packages.outputs.packages) }}
     container:
       image: ghcr.io/${{ github.repository }}/my-arch-repos:latest
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.CR_PAT }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
