@@ -76,10 +76,11 @@ jobs:
         run: |
           chown -R aurbuilder:aurbuilder .
           git config --global --add safe.directory $PWD
-          git submodule update --init $PACKAGE_PATH
+          git submodule update --init --recursive $PACKAGE_PATH
+          ls -l
+          ls -l $PACKAGE_PATH
           pushd $PACKAGE_PATH
           sudo -u aurbuilder -- env PKGDEST=$PWD/dist yay -S --noconfirm --needed .
-          ls -l dist
           popd
       
       - name: Upload package
