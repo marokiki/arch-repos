@@ -48,3 +48,8 @@ sudo pacman -Sy
 ```
 sudo pacman -S <package>
 ```
+
+## To Do
+- [ ] Add automatic package update
+    - A package should be updated when the upstream repository is updated
+    - Only updated packages should be built
