@@ -37,6 +37,7 @@ jobs:
           pull: true
       
       - name: List packages
+        id: list-packages
         run: |
           cd packages
           packages=$(find . -maxdepth 1 -type d | sed 's|^\./||' | grep -v '^\.' | jq -R . | jq -cs .)
@@ -47,6 +48,9 @@ jobs:
           fi
 
           echo "packages=$packages" >> $GITHUB_OUTPUT
+
+    outputs:
+      packages: ${{ steps.list-packages.outputs.packages }}
 
   build-packages:
     needs: list-packages
