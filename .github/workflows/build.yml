@@ -80,7 +80,7 @@ jobs:
           ls -l
           ls -l $PACKAGE_PATH
           pushd $PACKAGE_PATH
-          sudo -u aurbuilder -- env PKGDEST=$PWD/dist yay -S --noconfirm --needed .
+          sudo -u aurbuilder -- env PKGDEST=$PWD/dist makepkg -si --noconfirm .
           popd
       
       - name: Upload package
