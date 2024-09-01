@@ -1,0 +1,109 @@
+name: Build Arch User Repository
+on: 
+  push:
+    branches:
+      - master
+jobs:
+  list-packages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Log in to Harbor
+        uses: docker/login-action@v3
+        with:
+          registry: harbor.marokiki.net
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./src
+          push: true
+          tag: "harbor.marokiki.net/${{ github.repository }}/my-arch-repos:latest"
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          pull: true
+      
+      - name: List packages
+        run: |
+          cd packages
+          packages=$(find . -maxdepth 1 -type d | sed 's|^\./||' | grep -v '^\.' | jq -R . | jq -cs .)
+          echo "packages=$packages" >> $GITHUB_OUTPUT
+
+  build-packages:
+    needs: list-packages
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.list-packages.outputs.packages) }}
+    container:
+      image: harbor.marokiki.net/${{ github.repository }}/my-arch-repos:latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set Package Path
+        run: |
+          package=$(echo packages/${{ matrix.package }} | jq -r .)
+          echo "package=$package" >> $GITHUB_ENV
+      
+      - name: Prepare build environment
+        run: |
+          cd packages/${{ matrix.package }}
+          git submodule update --init --recursive
+          mkdir -p /workspace
+      - name: Build package
+        run: |
+          cd packages/${{ matrix.package }}
+          makepkg -si --noconfirm --builddir /workspace
+      
+      - name: Upload package
+        uses: actions/upload-artifact@v4
+        with:
+          name: package-${{ matrix.package }}
+          path: /workspace/*.pkg.tar.zst
+
+  upload-packages:
+    needs: build-packages
+    runs-on: ubuntu-latest
+    container:
+      image: harbor.marokiki.net/${{ github.repository }}/my-arch-repos:latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout the repo branch
+        uses: actions/checkout@v4
+        with:
+          ref: repo
+      
+      - name: Download Package
+        uses: actions/download-artifact@v4
+        with:
+          pattern: package-*
+          path: "."
+          merge-multiple: true
+      
+      - name: Upload packages 
+        run: |
+          repo-add -n -R parrot.db.tar.gz *.pkg.tar.zst
+          ls -l
+          git config --global --add safe.directory $PWD
+          git config --global user.email "84152320+github-actions@users.noreply.github.com"
+          git config --global user.name "github-actions"
+          git add parrot* *.pkg.tar.zst
+          git commit -m "Add new packages"
+          git push
+
+    

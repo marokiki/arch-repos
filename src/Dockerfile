@@ -1,0 +1,23 @@
+FROM archlinux:latest
+
+RUN pacman -Syu --noconfirm && \
+    pacman -S --noconfirm \
+    base-devel \
+    git \
+    sudo \
+    vim
+
+RUN useradd -m -G wheel aurbuilder && \
+    echo 'aurbuilder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+USER aurbuilder
+WORKDIR /home/aurbuilder
+
+RUN git clone https://aur.archlinux.org/yay.git && \
+    cd yay && \
+    makepkg -si --noconfirm
+
+RUN sudo pacman -Scc --noconfirm && \
+    sudo rm -rf /var/cache/pacman/pkg/* yay
+
+ENTRYPOINT ["/bin/bash"]
