@@ -74,11 +74,11 @@ jobs:
       
       - name: Build package
         run: |
-          chown -R builder:builder .
+          chown -R aurbuilder:aurbuilder .
           git config --global --add safe.directory $PWD
           git submodule update --init $PACKAGE_PATH
           pushd $PACKAGE_PATH
-          sudo -u builder -- env PKGDEST=$PWD/dist paru -B --noconfirm .
+          sudo -u aurbuilder -- env PKGDEST=$PWD/dist paru -B --noconfirm .
           ls -l dist
           popd
       
