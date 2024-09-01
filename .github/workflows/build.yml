@@ -84,13 +84,14 @@ jobs:
           sudo -u aurbuilder -- env PKGDEST=$PWD/dist makepkg -si --noconfirm .
           popd
           ls -l $PACKAGE_PATH/dist
-          echo "PACKAGE_PATH=$PACKAGE_PATH" >> $GITHUB_ENV
+
+          echo "packge_path=$PACKAGE_PATH" >> $GITHUB_ENV
       
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
           name: package-${{ matrix.package }}
-          path: ${{ steps.build-package.outputs.PACKAGE_PATH }}/dist/*.pkg.tar.zst
+          path: ${{ steps.build-package.outputs.packge_path }}/dist/*.pkg.tar.zst
 
   upload-packages:
     needs: build-packages
