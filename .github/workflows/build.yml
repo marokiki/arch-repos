@@ -70,7 +70,7 @@ jobs:
       - name: Set Package Path
         id: set-package-path
         run: |
-          echo "PACKAGE_PATH=source/${{ matrix.package }}" >> $GITHUB_ENV
+          echo "PACKAGE_PATH=packages/${{ matrix.package }}" >> $GITHUB_ENV
       
       - name: Build package
         run: |
