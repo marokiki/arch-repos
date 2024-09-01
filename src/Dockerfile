@@ -5,7 +5,8 @@ RUN pacman -Syu --noconfirm && \
     base-devel \
     git \
     sudo \
-    vim
+    vim \
+    jq
 
 RUN useradd -m -G wheel aurbuilder && \
     echo 'aurbuilder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
