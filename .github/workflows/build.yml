@@ -78,7 +78,7 @@ jobs:
           git config --global --add safe.directory $PWD
           git submodule update --init $PACKAGE_PATH
           pushd $PACKAGE_PATH
-          sudo -u aurbuilder -- env PKGDEST=$PWD/dist paru -B --noconfirm .
+          sudo -u aurbuilder -- env PKGDEST=$PWD/dist yay -S --noconfirm --needed .
           ls -l dist
           popd
       
