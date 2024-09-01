@@ -31,7 +31,7 @@ jobs:
         with:
           context: ./src
           push: true
-          tag: "harbor.marokiki.net/${{ github.repository }}/my-arch-repos:latest"
+          tags: "harbor.marokiki.net/${{ github.repository }}/my-arch-repos:latest"
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           pull: true
