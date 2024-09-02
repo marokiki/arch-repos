@@ -10,19 +10,15 @@ You should create a new repository for your own packages.
 ```
 git clone https://github.com/marokiki/arch-repos.git
 ```
-
-2. Change to the repository directory:
-```
-cd packages
 ```
 
-3. Add the package you want to build by git submodule:
+2. Add the package you want to build by git submodule:
 ```
 git submodule add https://aur.archlinux.org/<package>.git packages/<package>
 git submodule update --init --recursive
 ```
 
-4. Push the changes to the repository:
+3. Push the changes to the repository:
 ```
 git add .
 git commit -m "Add <package>"
