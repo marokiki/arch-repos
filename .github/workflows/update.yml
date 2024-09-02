@@ -1,4 +1,4 @@
-name: Build Arch User Repository
+name: Update Arch User Repository Every week
 on: 
   schedule:
     - cron: '0 0 * * 0' # Every Sunday at midnight
@@ -32,11 +32,13 @@ jobs:
     needs: update-repos
     if: success()
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Trigger the Build Workflow
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           script: |
-            const result = await github.actions.createWorkflowDispatch({
+            const result = await github.rest.actions.createWorkflowDispatch({
             owner: context.repo.owner,
             repo: context.repo.repo,
             workflow_id: 'build.yml',
