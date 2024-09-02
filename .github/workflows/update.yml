@@ -45,6 +45,7 @@ jobs:
             ref: 'master'
             });
             console.log(result);
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Slack Notification on Success
         if: success()
         uses: slackapi/slack-github-action@v1.27.0
