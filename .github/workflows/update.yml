@@ -25,17 +25,17 @@ jobs:
           git add .
           if git diff-index --quiet HEAD; then
               echo "No changes to commit"
-              echo "::set-output name=changes_committed::false"
+              echo "changes_committed=false" >> $GITHUB_OUTPUT
           else
               git commit -m "Update AUR submodules"
               git push origin master
-              echo "::set-output name=changes_committed::true"
+              echo "changes_committed=true" >> $GITHUB_OUTPUT
           fi
 
   trigger-build:
     runs-on: ubuntu-latest
     needs: update-repos
-    if: success()
+    if: needs.update-repos.outputs.changes_committed == 'true'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -66,7 +66,6 @@ jobs:
             See the details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          SLACK_BOT_NAME: "GitHub Actions"
       - name: Slack Notification on Failure
         if: failure()
         uses: slackapi/slack-github-action@v1.27.0
@@ -76,7 +75,28 @@ jobs:
             Build workflow has failed
             Job: ${{ github.job }}
             Error: ${{ steps.trigger_build.conclusion }} - ${{ steps.trigger_build.outcome }}
+            Workflow: ${{ github.workflow }}
+            Commit: ${{ github.sha }}
+            Triggered by: ${{ github.actor }}
             See the logs for more details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          SLACK_BOT_NAME: "GitHub Actions"
+    
+  nothing-updates:
+    runs-on: ubuntu-latest
+    needs: update-repos
+    if: needs.update-repos.outputs.changes_committed == 'false'
+    steps:
+      - name: Slack Notification
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL }}
+          slack-message: |
+            No changes to commit
+            Job: ${{ github.job }}
+            Workflow: ${{ github.workflow }}
+            Commit: ${{ github.sha }}
+            Triggered by: ${{ github.actor }}
+            See the details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

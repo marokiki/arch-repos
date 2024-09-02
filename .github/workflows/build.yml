@@ -128,5 +128,33 @@ jobs:
           git add parrot* *.pkg.tar.zst
           git commit -m "Add new packages"
           git push
-
+          
+      - name: Slack Notification on Success
+        if: success()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL }}
+          slack-message: |
+            Build the packages successfully
+            Job: ${{ github.job }}
+            Workflow: ${{ github.workflow }}
+            Commit: ${{ github.sha }}
+            Triggered by: ${{ github.actor }}
+            See the details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      - name: Slack Notification on Failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL }}
+          slack-message: |
+            Build workflow has failed
+            Job: ${{ github.job }}
+            Workflow: ${{ github.workflow }}
+            Commit: ${{ github.sha }}
+            Triggered by: ${{ github.actor }}
+            See the logs for more details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
     
