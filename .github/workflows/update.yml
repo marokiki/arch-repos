@@ -1,0 +1,63 @@
+name: Build Arch User Repository
+on: 
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at midnight
+  workflow_dispatch:
+jobs:
+  update-repos:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          token: ${{ secrets.CR_PAT}}
+      - name: Update all submodules
+        run: |
+            git submodule foreach --recursive git pull origin master
+      - name: Commit and push changes
+        run: |
+          git config --global user.email "84152320+github-actions@users.noreply.github.com"
+          git config --global user.name "github-actions"
+          git add .
+          if git diff-index --quiet HEAD; then
+              echo "No changes to commit"
+          else
+              git commit -m "Update AUR submodules"
+              git push origin master
+          fi
+
+  trigger-build:
+    runs-on: ubuntu-latest
+    needs: update-repos
+    if: success()
+    steps:
+      - name: Trigger the Build Workflow
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const result = await github.actions.createWorkflowDispatch({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            workflow_id: 'build.yml',
+            ref: 'master'
+            });
+            console.log(result);
+      - name: Slack Notification on Success
+        if: success()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL }}
+          slack-message: "Build workflow has been triggered successfully"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_NAME: "GitHub Actions"
+      - name: Slack Notification on Failure
+        if: failure()
+        uses: slackapi/slack-github-action@v1.27.0
+        with:
+          channel-id: ${{ secrets.SLACK_CHANNEL }}
+          slack-message: "Build workflow has failed"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_BOT_NAME: "GitHub Actions"
