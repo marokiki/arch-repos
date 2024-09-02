@@ -10,7 +10,6 @@ You should create a new repository for your own packages.
 ```
 git clone https://github.com/marokiki/arch-repos.git
 ```
-```
 
 2. Add the package you want to build by git submodule:
 ```
