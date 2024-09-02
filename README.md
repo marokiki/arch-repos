@@ -25,7 +25,7 @@ git commit -m "Add <package>"
 git push
 ```
 
-5. GitHub Actions will build the package and upload it to the repository.
+4. GitHub Actions will build the package and upload it to the repository.
 
 ## How to use
 1. Add the following lines to your `/etc/pacman.conf`:
