@@ -6,6 +6,8 @@ on:
 jobs:
   update-repos:
     runs-on: ubuntu-latest
+    outputs:
+        changes_committed: ${{ steps.check_changes.outputs.changes_committed }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -16,16 +18,18 @@ jobs:
         run: |
             git submodule foreach --recursive git pull origin master
       - name: Commit and push changes
+        id: check_changes
         run: |
           git config --global user.email "84152320+github-actions@users.noreply.github.com"
           git config --global user.name "github-actions"
           git add .
           if git diff-index --quiet HEAD; then
               echo "No changes to commit"
-              exit 1
+              echo "::set-output name=changes_committed::false"
           else
               git commit -m "Update AUR submodules"
               git push origin master
+              echo "::set-output name=changes_committed::true"
           fi
 
   trigger-build:
