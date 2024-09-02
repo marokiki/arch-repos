@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
 jobs:
   list-packages:
     runs-on: ubuntu-latest
