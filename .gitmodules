@@ -4,3 +4,15 @@
 [submodule "packages/etcd"]
 	path = packages/etcd
 	url = https://aur.archlinux.org/etcd.git
+[submodule "packages/adduser"]
+	path = packages/adduser
+	url = https://aur.archlinux.org/adduser.git
+[submodule "packages/kind"]
+	path = packages/kind
+	url = https://aur.archlinux.org/kind
+[submodule "packages/kubebuilder"]
+	path = packages/kubebuilder
+	url = https://aur.archlinux.org/kubebuilder
+[submodule "packages/rsyslog"]
+	path = packages/rsyslog
+	url = https://aur.archlinux.org/rsyslog
