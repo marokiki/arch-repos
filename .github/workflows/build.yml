@@ -120,6 +120,7 @@ jobs:
       
       - name: Upload packages 
         run: |
+          rm parrot.db.tar.gz parrot.files.tar.gz
           repo-add -n -R parrot.db.tar.gz *.pkg.tar.zst
           ls -l
           git config --global --add safe.directory $PWD
