@@ -17,6 +17,7 @@ jobs:
       - name: Update all submodules
         run: |
             git config --global pull.rebase false
+            git submodule update --init --recursive
             git submodule foreach --recursive git pull origin master
       - name: Commit and push changes
         id: check_changes
