@@ -16,3 +16,6 @@
 [submodule "packages/rsyslog"]
 	path = packages/rsyslog
 	url = https://aur.archlinux.org/rsyslog
+[submodule "packages/wg_tool"]
+	path = packages/wg_tool
+	url = https://aur.archlinux.org/wg_tool
