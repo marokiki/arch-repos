@@ -5,6 +5,7 @@ RUN pacman -Syu --noconfirm && \
     base-devel \
     git \
     sudo \
+    go \
     vim 
 
 RUN useradd -m -G wheel aurbuilder && \

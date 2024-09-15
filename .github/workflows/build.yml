@@ -127,7 +127,7 @@ jobs:
           git config --global user.name "github-actions"
           git add parrot* *.pkg.tar.zst
           git commit -m "Add new packages"
-          git push
+          git push origin repo
           
       - name: Slack Notification on Success
         if: success()
