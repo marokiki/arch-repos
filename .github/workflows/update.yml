@@ -16,7 +16,7 @@ jobs:
           token: ${{ secrets.CR_PAT}}
       - name: Update all submodules
         run: |
-            git config pull.rebase true
+            git config --global pull.rebase true
             git submodule foreach --recursive git pull origin master
       - name: Commit and push changes
         id: check_changes
