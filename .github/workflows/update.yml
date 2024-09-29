@@ -23,7 +23,6 @@ jobs:
             git config --global init.defaultBranch master
             git config --global push.autoSetupRebase true
             git config --global commit.verbose true
-            git pull origin master
             git submodule update --init --recursive
             git submodule foreach --recursive git pull origin master --allow-unrelated-histories
       - name: Commit and push changes
