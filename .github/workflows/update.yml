@@ -13,6 +13,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+          ref: master
           token: ${{ secrets.CR_PAT}}
       - name: Update all submodules
         run: |
@@ -22,6 +23,7 @@ jobs:
             git config --global init.defaultBranch master
             git config --global push.autoSetupRebase true
             git config --global commit.verbose true
+            git pull origin master
             git submodule update --init --recursive
             git submodule foreach --recursive git pull origin master --allow-unrelated-histories
       - name: Commit and push changes
